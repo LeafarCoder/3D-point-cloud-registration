@@ -23,6 +23,9 @@ Some drawbacks come from the fact the Kinect uses infrared (IR) light to perceiv
 
 All images acquired with the Kinect (RGB and depth) have a resolution of 640x480 pixels.
 
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Fig_1.PNG)
+*Figure 1: Acquisition tool and RGB/depth pair examples*
+
 ## 1.2 Pin-hole camera model
 The pin-hole camera model explains how a camera, as a mathematical function abstraction, works. This model describes a camera as a transformation that projects 3D world points onto 2D points on the image plane.
 
