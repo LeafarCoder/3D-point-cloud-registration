@@ -27,11 +27,11 @@ All images acquired with the Kinect (RGB and depth) have a resolution of 640x480
 The pin-hole camera model explains how a camera, as a mathematical function abstraction, works. This model describes a camera as a transformation that projects 3D world points onto 2D points on the image plane.
 
 To elaborate on the model let us first define
-<img src="https://render.githubusercontent.com/render/math?math=X=[X, Y, Z]^T">
+<p align="center"><img src="https://rawgit.com/LeafarCoder/3D-point-cloud-registration/None/svgs/a763235ca8b29b00e081999a7f932191.svg?invert_in_darkmode" align=middle width=106.95356594999998pt height=18.7598829pt/></p>
 as the coordinates of some 3D world point and
-<img src="https://render.githubusercontent.com/render/math?math=x=[x, y]^T">
+<p align="center"><img src="https://rawgit.com/LeafarCoder/3D-point-cloud-registration/None/svgs/0becc83dc16f457ea7a10898849d1c07.svg?invert_in_darkmode" align=middle width=75.32886239999999pt height=18.7598829pt/></p>
 as the coordinates of that same point when projected onto the image plane.
 
-To project X onto the image plane we first need another point in the 3D world called the optical center, O.
+To project <p align="center"><img src="https://rawgit.com/LeafarCoder/3D-point-cloud-registration/None/svgs/c1809668d64eff2bbf358a60787e123b.svg?invert_in_darkmode" align=middle width=14.90868885pt height=11.232861749999998pt/></p> onto the image plane we first need another point in the 3D world called the optical center, <p align="center"><img src="https://rawgit.com/LeafarCoder/3D-point-cloud-registration/None/svgs/5d73d1f6e66b117d43a02c45e4d608da.svg?invert_in_darkmode" align=middle width=12.99542475pt height=11.232861749999998pt/></p>.
 If we define the focal distance, f, as the closest distance from the optical center and the image plane then the
 projected points are given by Equation 1.
