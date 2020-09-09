@@ -163,7 +163,8 @@ in Figure 4. In one iteration of the algorithm (as shown in Figure 3), this is p
 <img src="https://render.githubusercontent.com/render/math?math=\{RGB_{i-1}, D_{i-1}\}">
 <img src="https://render.githubusercontent.com/render/math?math=\{RGB_i, D_i\}">.
 
-![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Fig_4PNG)
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Fig_4.PNG)
+*Figure 4: Point cloud generation*
 
 Then, using the SIFT algorithm, we extract the features and descriptors from the RGB images (properly converted into grayscale images). Then, we match the two sets of descriptors to find the indices in the images that correspond to common features. These matching points are, however, in RGB image coordinates, so they have to be transformed onto the 3D coordinates in the RGB camera reference frame.
 
@@ -172,10 +173,12 @@ The thresholds set for key point detection were decreased a lot to be able to fi
 Once we have two sets of matching 3D points, these are fed to the RANSAC algorithm for outlier detection. The model used for RANSAC is the general 3D affine model. The model is simply:
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_8.PNG)
+<img src="https://render.githubusercontent.com/render/math?math=\quad \quad (8)">
 
 This model can be rewritten such that there is a closed-form solution. For each set of 3D points:
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_9.PNG)
+<img src="https://render.githubusercontent.com/render/math?math=\quad \quad (9)">
 
 Which is an equation of the form:
 
@@ -207,7 +210,9 @@ is the identity matrix except when
 <img src="https://render.githubusercontent.com/render/math?math=VU^T">
 is in fact a reflection, and the multiplication of this middle matrix corrects it to be a rotation (the final diagonal element will be a -1, the determinant of a reflection matrix).
 
-With an initial estimate of R and T, we can now perform the ICP algorithm to refine this estimate. The fixed point cloud is the
+With an initial estimate of *R* and 
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{T}">
+, we can now perform the ICP algorithm to refine this estimate. The fixed point cloud is the
 <img src="https://render.githubusercontent.com/render/math?math=(i-1)^{th}">
 th point cloud and the moving one will be the
 <img src="https://render.githubusercontent.com/render/math?math=i^{th}">
