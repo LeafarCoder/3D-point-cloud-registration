@@ -2,7 +2,7 @@
 
 This project was done in the context of the Vision and Image Processing course lectured at Instituto Superior Técnico (Fall 2019)
 
-![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/cover.PNG)
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/cover.png)
 
 ---
 - [1 Introduction](#1-introduction)
