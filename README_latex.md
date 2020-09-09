@@ -35,3 +35,10 @@ projected points are given by Equation 1.
 
 If the focal distance is considered to be unitary $$(f=1)$$ and homogeneous coordinates are used instead, then
 the following system is obtained:
+
+
+The optical axis does not always intersect the image plane at the origin, as there is an offset (vertical and/or
+horizontal), which can be described with a combination of a rotation, R and a translation, T. There is also
+a change of units: from the 3D world in meters (or some multiple) to the image plane in pixels. There is a
+conversion factor to account for these changes. Together, these values are called intrinsic parameters as they
+define properties of the image formation affected by the camera itself, and are represented by a matrix, K.
