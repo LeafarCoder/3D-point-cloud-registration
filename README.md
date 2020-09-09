@@ -4,7 +4,14 @@ This project was done in the context of the Vision and Image Processing course l
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/cover.png)
 
+# Requirements
+
+[VLFeat](https://github.com/vlfeat/vlfeat) is a required library.
+
 ---
+
+# Project description
+
 - [1 Introduction](#1-introduction)
   - [1.1 Kinect camera](#11-kinect-camera)
   - [1.2 Pin-hole camera model](#12-pin-hole-camera-model)
