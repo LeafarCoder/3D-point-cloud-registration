@@ -153,10 +153,12 @@ The first sub-problem we need to address in this project is the combination of t
 <img src="https://render.githubusercontent.com/render/math?math=\mathbf{T}">.
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_6.PNG)
+<img src="https://render.githubusercontent.com/render/math?math=\quad \quad (6)">
 
 Next, we need to transform the points from the depth camera reference frame to the RGB camera reference frame. These reference frames are related by a combination of a rotation and a translation. The corresponding equation is the following one:
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_7.PNG)
+<img src="https://render.githubusercontent.com/render/math?math=\quad \quad (7)">
 
 Equations 6 and 7 are shown for a single point, but the computations have to be done for all points. Example
 in Figure 4. In one iteration of the algorithm (as shown in Figure 3), this is performed for the consecutive pairs
@@ -164,6 +166,7 @@ in Figure 4. In one iteration of the algorithm (as shown in Figure 3), this is p
 <img src="https://render.githubusercontent.com/render/math?math=\{RGB_i, D_i\}">.
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Fig_4.PNG)
+
 *Figure 4: Point cloud generation*
 
 Then, using the SIFT algorithm, we extract the features and descriptors from the RGB images (properly converted into grayscale images). Then, we match the two sets of descriptors to find the indices in the images that correspond to common features. These matching points are, however, in RGB image coordinates, so they have to be transformed onto the 3D coordinates in the RGB camera reference frame.
@@ -184,7 +187,7 @@ Which is an equation of the form:
 
 <img src="https://render.githubusercontent.com/render/math?math=A\mathbf{h}=\mathbf{X} \quad \quad (10)">
 
-Matrix A is repeated in rows with all other 3D points. With n “ 4 points, this is a determined system with solution:
+Matrix A is repeated in rows with all other 3D points. With n=4 points, this is a determined system with solution:
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathbf{h}=A^{-1}\mathbf{X} \quad \quad (11)">
 
