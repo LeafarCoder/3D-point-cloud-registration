@@ -2,16 +2,16 @@
 
 This project was done in the context of the Vision and Image Processing course lectured at Instituto Superior Técnico (Fall 2019)
 
-- [Introduction](#introduction)
-- [1.1 Kinect camera](#11-kinect-camera)
+- [1 Introduction](#1-introduction)
+  - [1.1 Kinect camera](#11-kinect-camera)
   - [1.2 Pin-hole camera model](#12-pin-hole-camera-model)
   - [1.3 Feature detection with SIFT](#13-feature-detection-with-sift)
   - [1.4 Model fitting to noisy data with RANSAC](#14-model-fitting-to-noisy-data-with-ransac)
   - [1.5 Estimating transformation between two point clouds](#15-estimating-transformation-between-two-point-clouds)
-  - [1.6 The ICP algorithm](16-the-icp-algorithm)
+  - [1.6 The ICP algorithm](#16-the-icp-algorithm)
 - [2 Implementation](#2-implementation)
 
-## Introduction
+## 1 Introduction
 
 The main purpose of this project is to reconstruct a 3D scene from a set of RGB and depth images (in 2D) acquired from a Kinect camera.
 
@@ -129,10 +129,102 @@ and
 are the ones that minimize Equation 4 can be found in Appendix A.
 
 ### 1.6 The ICP algorithm
-The Iterative Closest Point (ICP) algorithm’s purpose in this context is to minimize equation 4 without knowing a priori what points are matching points in a pair of point clouds. To estimate which points are matches, it considers a sub-sample of the points in one point cloud, and determines the corresponding nearestneighbor in the other point cloud. Then, a fraction of the lowest-distanced neighbors are considered the matching points, with which it computes the transformation using the procedure described in Section 1.5. It then repeats this process until a stopping criteria has been achieved (i.e., minimum distance of nearest-neighbor, maximum
+The Iterative Closest Point (ICP) algorithm’s purpose in this context is to minimize Equation 4 without knowing a priori what points are matching points in a pair of point clouds. To estimate which points are matches, it considers a sub-sample of the points in one point cloud, and determines the corresponding nearestneighbor in the other point cloud. Then, a fraction of the lowest-distanced neighbors are considered the matching points, with which it computes the transformation using the procedure described in Section 1.5. It then repeats this process until a stopping criteria has been achieved (i.e., minimum distance of nearest-neighbor, maximum
 number of iterations). As long as the algorithm as a sufficiently close initial guess for the transformation, it converges.
 
 
 ## 2 Implementation
-Having laid down the theoretical principals for this project on the previous Sections, we will now go through
-the sequence of steps taken to solve the proposed problem. A visual summary can be seen in Figure 3.
+Having laid down the theoretical principals for this project on the previous Sections, we will now go through the sequence of steps taken to solve the proposed problem. A visual summary can be seen in Figure 3.
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Fig_3.PNG)
+
+*Figure 3: Flowchart summarising the steps to solve the proposed problem*
+
+The main body of the algorithm iterates over all consecutive images. Let’s call the 
+<img src="https://render.githubusercontent.com/render/math?math=i^{th}">
+RGB image
+<img src="https://render.githubusercontent.com/render/math?math=RGB_i">
+and its corresponding depth image
+<img src="https://render.githubusercontent.com/render/math?math=D_i">.
+
+The first sub-problem we need to address in this project is the combination of the data present in an RGB/depth image pair to include on the 3D scene. We can define the image coordinates *u* and *v* to simply be the indices of each pixel (with (0,0) coinciding with the top left corner), and Z to be the corresponding depth at those coordinates. We can then use Equation 3 with R “ I (identity matrix) and
+<img src="https://render.githubusercontent.com/render/math?math=T=[0,0,0]^T">
+(since we are still in the depth camera reference frame, and thus there is no geometric transformation of the coordinates apart from the pixel to meter conversion) to compute the X and Y coordinates. The corresponding equation is the following one, which is simply an inversion of Equation 3 with the specified *R* and 
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{T}">.
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_6.PNG)
+
+Next, we need to transform the points from the depth camera reference frame to the RGB camera reference frame. These reference frames are related by a combination of a rotation and a translation. The corresponding equation is the following one:
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_7.PNG)
+
+Equations 6 and 7 are shown for a single point, but the computations have to be done for all points. Example
+in Figure 4. In one iteration of the algorithm (as shown in Figure 3), this is performed for the consecutive pairs
+<img src="https://render.githubusercontent.com/render/math?math=\{RGB_{i-1}, D_{i-1}\}">
+<img src="https://render.githubusercontent.com/render/math?math=\{RGB_i, D_i\}">.
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Fig_4PNG)
+
+Then, using the SIFT algorithm, we extract the features and descriptors from the RGB images (properly converted into grayscale images). Then, we match the two sets of descriptors to find the indices in the images that correspond to common features. These matching points are, however, in RGB image coordinates, so they have to be transformed onto the 3D coordinates in the RGB camera reference frame.
+
+The thresholds set for key point detection were decreased a lot to be able to find a lot of features. Since we have ways to exclude outliers, it is worth it to find as many features as possible, because correctly aligning 3D points is a very difficult procedure, and thus having as many points to work with as possible, will allow the detection of at least a few that are good to estimste the transformation.
+
+Once we have two sets of matching 3D points, these are fed to the RANSAC algorithm for outlier detection. The model used for RANSAC is the general 3D affine model. The model is simply:
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_8.PNG)
+
+This model can be rewritten such that there is a closed-form solution. For each set of 3D points:
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_9.PNG)
+
+Which is an equation of the form:
+
+<img src="https://render.githubusercontent.com/render/math?math=A\mathbf{h}=\mathbf{X} \quad \quad (10)">
+
+Matrix A is repeated in rows with all other 3D points. With n “ 4 points, this is a determined system with solution:
+
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{h}=A^{-1}\mathbf{X} \quad \quad (11)">
+
+If more than four points are used, this becomes an over-determined system, whose least squares solution is given by the Moore-Penrose pseudo-inverse:
+
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{h}=(A^{T}A)^{-1}A^T\mathbf{X} \quad \quad (12)">
+
+
+For any case, matrix A is ill-conditioned when there are coplanar points. Ill-conditioned matrices don’t have well defined inverses, and thus the estimated parameters have a lot of error. To ensure this doesn’t influence the inlier choice, everytime the condition number for matrix A is larger than a threshold, that iteration stops
+there and is repeated with a different permutation of four points.
+
+For this project, this is the model fed to RANSAC. The reason why the more general affine model is chosen for outlier detection instead of the rigid model, is the fact that there is a closed-form solution for the parameters of the transformation, and since this is a more general model, the inliers will fit with this model as well. Since a lot of features are being detected by the SIFT algorithm, the number of iterations was set higher than usual, at k=2876. The distance threshold for inlier classification was set to 1 cm.
+
+After the inliers have been found, these can be used to estimate the rotation and translation as described in section 1.5. One aspect we must turn our attention to is the fact that the rotation matrix can be estimated with det(R)=-1, which isn’t in fact a rotation, but a reflection. To account for this, the estimated rotation can then be corrected in the following way:
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_13.PNG)
+
+Where the matrix between 
+<img src="https://render.githubusercontent.com/render/math?math=V">
+and
+<img src="https://render.githubusercontent.com/render/math?math=U^T">
+is the identity matrix except when
+<img src="https://render.githubusercontent.com/render/math?math=VU^T">
+is in fact a reflection, and the multiplication of this middle matrix corrects it to be a rotation (the final diagonal element will be a -1, the determinant of a reflection matrix).
+
+With an initial estimate of R and T, we can now perform the ICP algorithm to refine this estimate. The fixed point cloud is the
+<img src="https://render.githubusercontent.com/render/math?math=(i-1)^{th}">
+th point cloud and the moving one will be the
+<img src="https://render.githubusercontent.com/render/math?math=i^{th}">
+one. The moving point cloud is also downsampled to achieve lower computation times and higher registration accuracy. Furthermore, during the ICP algorithm, sets of matching points are used to estimate the transformation if its Euclidean distances fall within a percentage set of matching distances. To assure that only the low matching distance points are used, this percentage is set to 20%. Otherwise, regions that are present in one point cloud but not in the other would be considered to estimate the transformation despite not being true matches, substantially influencing the transformation estimation in a negative way.
+
+The ICP returns a final estimate of R and T, which can be used to merge the
+<img src="https://render.githubusercontent.com/render/math?math=i^{th}">
+point cloud with the current merge of all previous point clouds. Before doing so, the estimated transformation still has to be composed with the previous ones, since the estimated transformation was determined between clouds i and i-1, and we wish to merge them in the reference frame of the first point cloud. The composition can be exemplified for two sets of point clouds:
+
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{X_2}=R_{12}\mathbf{X_{1}}+\mathbf{T_{12}}">
+
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{X_3}=R_{23}\mathbf{X_{2}}+\mathbf{T_{23}}">
+
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{X_3}=R_{23}R_{12}\mathbf{X_{1}}+R_{23}\mathbf{T_{12}}+\mathbf{T_{23}}">
+
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{X_3}=R_{13}\mathbf{X_{1}}+\mathbf{T_{13}}\quad,\quad R_{13}=R_{23}R_{12}\quad,\quad \mathbf{T_{13}}=R_{23}\mathbf{T_{12}}+\mathbf{T_{23}} \quad \quad (14)">
+
+This idea can be extended for any number of point clouds, ensuring that all clouds are transformed onto the reference frame of the first point cloud.
+
+Every described step is then repeated for the next pair of consecutive point clouds, until all of them have been merged into a final one.
