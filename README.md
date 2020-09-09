@@ -46,17 +46,15 @@ projected points are given by Equation 1.
 
 <img src="https://render.githubusercontent.com/render/math?math=y=f\frac{X}{Z} ,  x=f\frac{Y}{Z}    (1)">
 
-
 If the focal distance is considered to be unitary (f=1) and homogeneous coordinates are used instead, then the following system is obtained:
 
-<img src="https://render.githubusercontent.com/render/math?math=\lambda \begin{bmatrix}x\\ y\\ z\end{bmatrix}=\begin{bmatrix}1 & 0 & 0 & 0\\ 0 & 1 & 0 & 0\\ 0 & 0 & 1 & \end{bmatrix}\begin{bmatrix}X\\ Y\\ Z\\ 1\end{bmatrix}">
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_2.PNG)
 
 The optical axis does not always intersect the image plane at the origin, as there is an offset (vertical and/or horizontal), which can be described with a combination of a rotation, R and a translation, T. There is also a change of units: from the 3D world in meters (or some multiple) to the image plane in pixels. There is a conversion factor to account for these changes. Together, these values are called intrinsic parameters as they define properties of the image formation affected by the camera itself, and are represented by a matrix, K.
 
-<img src="https://render.githubusercontent.com/render/math?math=\lambda \begin{bmatrix}u\\ v\\ 1\end{bmatrix}=K\begin{bmatrix}1 & 0 & 0 & 0\\ 0 & 1 & 0 & 0\\ 0 & 0 & 1 & \end{bmatrix}\begin{bmatrix}R & T\\ 0^T & 1\end{bmatrix}\begin{bmatrix}X\\ Y\\ Z\\ 1\end{bmatrix}">
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Eq_3.PNG)
 
-Since we are now in image coordinates in pixels, these are represented by u and v instead of x and y, so
-they are distinguishable.
+Since we are now in image coordinates in pixels, these are represented by u and v instead of x and y, so they are distinguishable.
 
 ## 1.3 Feature detection with SIFT
 The Shift Invariant Feature Transform (SIFT) is an algorithm for feature detection and matching.
@@ -78,6 +76,7 @@ The procedure of the algorithm follows the following steps.
 1. Randomly sample n points and instantiate the model from where we obtain the model fitted parameters, <img src="https://render.githubusercontent.com/render/math?math=\widehat{\Theta}">.
 2. For all points compute the error <img src="https://render.githubusercontent.com/render/math?math=\varepsilon _i = |Y_i-\widehat{\Theta }X_i|">
 3. Classify every point as Inlier or Outlier based on the rule:
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Form_1.PNG)
 
 4. Count number of Inliers. If this is the largest number of inliers so far then update maximum and keep these inliers as bestInliers.
 5. Repeat steps from 1. to 4. and stop after k iterations.
@@ -88,3 +87,5 @@ Since the probability of success for finding a correct random sample of n points
 the model is given by 
 <img src="https://render.githubusercontent.com/render/math?math=P=1-(1-p^n)^k">
 , then, to estimate the number of iterations to use, we can use:
+
+img src="https://render.githubusercontent.com/render/math?math=k=\frac{\log(1-P)}{\log(1-p^n)}\">
