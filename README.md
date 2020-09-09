@@ -95,7 +95,6 @@ Since the probability of success for finding a correct random sample of n points
 the model is given by 
 <img src="https://render.githubusercontent.com/render/math?math=P=1-(1-p^n)^k">
 , then, to estimate the number of iterations to use, we can use:
-
 <img src="https://render.githubusercontent.com/render/math?math=k=\frac{\log(1-P)}{\log(1-p^n)}">
 
 As an illustration, let us consider a model which needs a minimum number of points n=4. Table 1 contains the number of iterations, k, necessary to have a probability of P of getting at least one random sample of n points where all the sampled points are inliers (and where the probability of being inlier is p). As we can see, the number of iterations increases a lot when the probability of having inliers in the dataset decreases.
