@@ -3,8 +3,8 @@
 This project was done in the context of the Vision and Image Processing course lectured at Instituto Superior Técnico (Fall 2019)
 
 - [Introduction](#introduction)
-- [Introduction](#introduction)
-- [Introduction](#introduction)
+- [1.1 Kinect camera](#11-kinect-camera)
+- [1.2 Pin-hole camera model](#12-pin-hole-camera-model)
 - [Introduction](#introduction)
 
 ## Introduction
@@ -27,7 +27,11 @@ All images acquired with the Kinect (RGB and depth) have a resolution of 640x480
 The pin-hole camera model explains how a camera, as a mathematical function abstraction, works. This model describes a camera as a transformation that projects 3D world points onto 2D points on the image plane.
 
 To elaborate on the model let us first define
-<img src="https://render.githubusercontent.com/render/math?math=\pmb{X}=[X, Y, Z]^T">
+<img src="https://render.githubusercontent.com/render/math?math=X=[X, Y, Z]^T">
 as the coordinates of some 3D world point and
-<img src="https://render.githubusercontent.com/render/math?math=\pmb{x}=[x, y]^T">
+<img src="https://render.githubusercontent.com/render/math?math=x=[x, y]^T">
 as the coordinates of that same point when projected onto the image plane.
+
+To project X onto the image plane we first need another point in the 3D world called the optical center, O.
+If we define the focal distance, f, as the closest distance from the optical center and the image plane then the
+projected points are given by Equation 1.
