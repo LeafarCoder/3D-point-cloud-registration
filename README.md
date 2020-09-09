@@ -4,8 +4,12 @@ This project was done in the context of the Vision and Image Processing course l
 
 - [Introduction](#introduction)
 - [1.1 Kinect camera](#11-kinect-camera)
-- [1.2 Pin-hole camera model](#12-pin-hole-camera-model)
-- [Introduction](#introduction)
+  - [1.2 Pin-hole camera model](#12-pin-hole-camera-model)
+  - [1.3 Feature detection with SIFT](#13-feature-detection-with-sift)
+  - [1.4 Model fitting to noisy data with RANSAC](#14-model-fitting-to-noisy-data-with-ransac)
+  - [1.5 Estimating transformation between two point clouds](#15-estimating-transformation-between-two-point-clouds)
+  - [1.6 The ICP algorithm](16-the-icp-algorithm)
+- [2 Implementation](#2-implementation)
 
 ## Introduction
 
@@ -15,7 +19,7 @@ The problem is divided into sub-problems and each one was tackled by a sub-solut
 The following Sections present the acquisition tool (Section 1.1), and some theory (Sections 1.2 to 1.6) that
 back up the solutions used (further discussed on Section 2).
 
-## 1.1 Kinect camera
+### 1.1 Kinect camera
 The acquisition of both RGB and depth images was performed using a Kinect camera (Intel Realsense).
 This technology has a regular RGB camera to read the RGB image and an infrared projector and camera which measures the distance from the Kinect to the 3D world points that appear on the 2D RGB image.
 
@@ -27,13 +31,13 @@ All images acquired with the Kinect (RGB and depth) have a resolution of 640x480
 
 *Figure 1: Acquisition tool and RGB/depth pair examples*
 
-## 1.2 Pin-hole camera model
+### 1.2 Pin-hole camera model
 The pin-hole camera model explains how a camera, as a mathematical function abstraction, works. This model describes a camera as a transformation that projects 3D world points onto 2D points on the image plane.
 
 To elaborate on the model let us first define 
-<img src="https://render.githubusercontent.com/render/math?math=X=[X,Y,Z]^T">
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{X}=[X,Y,Z]^T">
 as the coordinates of some 3D world point and
-<img src="https://render.githubusercontent.com/render/math?math=x=[x,y]^T">
+<img src="https://render.githubusercontent.com/render/math?math=\mathbf{x}=[x,y]^T">
 as the coordinates of that same point when projected onto the image plane.
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Fig_2.PNG)
@@ -44,7 +48,7 @@ To project X onto the image plane we first need another point in the 3D world ca
 If we define the focal distance, f, as the closest distance from the optical center and the image plane then the
 projected points are given by Equation 1.
 
-<img src="https://render.githubusercontent.com/render/math?math=y=f\frac{X}{Z} ,  x=f\frac{Y}{Z}    (1)">
+<img src="https://render.githubusercontent.com/render/math?math=y=f\frac{X}{Z} \quad,\quad x=f\frac{Y}{Z}\quad \quad (1)">
 
 If the focal distance is considered to be unitary (f=1) and homogeneous coordinates are used instead, then the following system is obtained:
 
@@ -56,7 +60,7 @@ The optical axis does not always intersect the image plane at the origin, as the
 
 Since we are now in image coordinates in pixels, these are represented by u and v instead of x and y, so they are distinguishable.
 
-## 1.3 Feature detection with SIFT
+### 1.3 Feature detection with SIFT
 The Shift Invariant Feature Transform (SIFT) is an algorithm for feature detection and matching.
 
 The SIFT algorithm builds the scale space of the image. To do so, it filters the image with Gaussian filters of different standard deviations. The set of images where each has been filtered with a different standard deviation Gaussian is called an octave. After the first octave is built, the image is downsampled to build another octave, using the same procedure, at a different scale.
@@ -66,7 +70,7 @@ descriptor is stored according to the key point position it is invariant to tran
 
 Features are matched using their descriptors, which are invariant to many image transformations, thus providing a set of points which can be used to match point clouds.
 
-## 1.4 Model fitting to noisy data with RANSAC
+### 1.4 Model fitting to noisy data with RANSAC
 Random Sample Consensus (RANSAC) is a method that iteratively searches for the best estimate for the parameters of a model. It works on the assumption that a given dataset might be composed of both inliers which are explained by the model (and may contain noise) and outliers. A clear distinction between noise and outliers is important. While noise is a perturbance of the signal that is explained by some distribution (most commonly a normal distribution), an outlier is a data point that deviates so much from the model that the probability of the noise distribution explaining it is very low.
 
 As an input, the algorithm requires the model, a set of N points, the minimum number of points to instantiate a particular model (n), the probability of finding an inlier on the dataset (p), and a threshold value to know if a point is explained by the model (d).
@@ -76,6 +80,7 @@ The procedure of the algorithm follows the following steps.
 1. Randomly sample n points and instantiate the model from where we obtain the model fitted parameters, <img src="https://render.githubusercontent.com/render/math?math=\widehat{\Theta}">.
 2. For all points compute the error <img src="https://render.githubusercontent.com/render/math?math=\varepsilon _i = |Y_i-\widehat{\Theta }X_i|">
 3. Classify every point as Inlier or Outlier based on the rule:
+
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Form_1.PNG)
 
 4. Count number of Inliers. If this is the largest number of inliers so far then update maximum and keep these inliers as bestInliers.
@@ -88,4 +93,46 @@ the model is given by
 <img src="https://render.githubusercontent.com/render/math?math=P=1-(1-p^n)^k">
 , then, to estimate the number of iterations to use, we can use:
 
-img src="https://render.githubusercontent.com/render/math?math=k=\frac{\log(1-P)}{\log(1-p^n)}\">
+<img src="https://render.githubusercontent.com/render/math?math=k=\frac{\log(1-P)}{\log(1-p^n)}">
+
+As an illustration, let us consider a model which needs a minimum number of points n=4. Table 1 contains the number of iterations, k, necessary to have a probability of P of getting at least one random sample of n points where all the sampled points are inliers (and where the probability of being inlier is p). As we can see, the number of iterations increases a lot when the probability of having inliers in the dataset decreases.
+
+*Table 1: Number of RANSAC iterations as a function of p and P*
+
+![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/Table_1.PNG)
+
+### 1.5 Estimating transformation between two point clouds
+The most general transformation between two rigid (as opposed to deforming) point clouds p and q is a three-dimensional rigid body transformation, composed of a rotation, R and a translation, T. The objective function we want to minimize is thus:
+
+<img src="https://render.githubusercontent.com/render/math?math=E(R,T)=\sum_{i=1}^{N} \left \| \mathbf{q_i}-(R\mathbf{p_i}+\mathbf{T}) \right \|^2">
+
+The first step in determining R and T that minimize Equation 4 is the determination of the centroids of the
+point clouds and their subsequent subtraction from the original point clouds.
+
+<img src="https://render.githubusercontent.com/render/math?math=q_{0}=q-\sum_{i=1}^{N} \frac{\mathbf{q_i}}{N}\quad,\quad p_{0}=p-\sum_{i=1}^{N} \frac{\mathbf{p_i}}{N}">
+
+Then, it is possible to prove that the rotation matrix, Rp and translation vector, Tp that minimize the
+optimization equation 4 is computed in the following way:
+
+<img src="https://render.githubusercontent.com/render/math?math=M=p_{0}\,q_{0}^T=U\Sigma V^T \quad \quad (4)">
+
+<img src="https://render.githubusercontent.com/render/math?math=\widehat{R}=VU^T \quad \quad (5)">
+
+<img src="https://render.githubusercontent.com/render/math?math=\widehat{\mathbf{T}}=\sum_{i=1}^{N} \frac{\mathbf{p_i}}{N}-\widehat{R}\sum_{i=1}^{N} \frac{\mathbf{q_i}}{N}">
+
+Where 
+<img src="https://render.githubusercontent.com/render/math?math=U\Sigma V^T">
+is the singular value decomposition of M. A detailed proof as to why these 
+<img src="https://render.githubusercontent.com/render/math?math=\widehat{R}">
+and 
+<img src="https://render.githubusercontent.com/render/math?math=\widehat{\mathbf{T}}">
+are the ones that minimize Equation 4 can be found in Appendix A.
+
+### 1.6 The ICP algorithm
+The Iterative Closest Point (ICP) algorithm’s purpose in this context is to minimize equation 4 without knowing a priori what points are matching points in a pair of point clouds. To estimate which points are matches, it considers a sub-sample of the points in one point cloud, and determines the corresponding nearestneighbor in the other point cloud. Then, a fraction of the lowest-distanced neighbors are considered the matching points, with which it computes the transformation using the procedure described in Section 1.5. It then repeats this process until a stopping criteria has been achieved (i.e., minimum distance of nearest-neighbor, maximum
+number of iterations). As long as the algorithm as a sufficiently close initial guess for the transformation, it converges.
+
+
+## 2 Implementation
+Having laid down the theoretical principals for this project on the previous Sections, we will now go through
+the sequence of steps taken to solve the proposed problem. A visual summary can be seen in Figure 3.
