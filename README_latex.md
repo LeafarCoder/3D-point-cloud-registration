@@ -26,12 +26,12 @@ All images acquired with the Kinect (RGB and depth) have a resolution of 640x480
 ## 1.2 Pin-hole camera model
 The pin-hole camera model explains how a camera, as a mathematical function abstraction, works. This model describes a camera as a transformation that projects 3D world points onto 2D points on the image plane.
 
-To elaborate on the model let us first define <p align="center"><img src="https://rawgit.com/LeafarCoder/3D-point-cloud-registration/svgs/svgs/ece379bc94ea9c45a8fa9e846c29ebf8.svg?invert_in_darkmode" align=middle width=106.95356594999998pt height=18.7598829pt/></p> as the coordinates of some 3D world point and <p align="center"><img src="https://rawgit.com/LeafarCoder/3D-point-cloud-registration/svgs/svgs/7df2c47253d49b8cb2872523baaaafb9.svg?invert_in_darkmode" align=middle width=80.7169605pt height=18.7598829pt/></p> as the coordinates of that same point when projected onto the image plane.
+To elaborate on the model let us first define $$X=[X,Y,Z]^T$$ as the coordinates of some 3D world point and $$x=[x,y]^T]$$ as the coordinates of that same point when projected onto the image plane.
 
 To project X onto the image plane we first need another point in the 3D world called the optical center, O.
 If we define the focal distance, f, as the closest distance from the optical center and the image plane then the
 projected points are given by Equation 1.
 
 
-If the focal distance is considered to be unitary <p align="center"><img src="https://rawgit.com/LeafarCoder/3D-point-cloud-registration/svgs/svgs/f1aeca7a49e452f936aa5128a197e71b.svg?invert_in_darkmode" align=middle width=52.7396859pt height=16.438356pt/></p> and homogeneous coordinates are used instead, then
+If the focal distance is considered to be unitary $$(f=1)$$ and homogeneous coordinates are used instead, then
 the following system is obtained:
