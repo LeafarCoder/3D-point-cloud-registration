@@ -4,9 +4,14 @@ This project was done in the context of the Vision and Image Processing course l
 
 ![](https://github.com/LeafarCoder/3D-point-cloud-registration/blob/master/Images/README/cover.png)
 
+Authors:
+* João Ribeiro
+* [Rafael Correia](https://sourcerer.io/leafarcoder)
+* Zuzanna Swiderska
+
 # Requirements
 
-[VLFeat](https://github.com/vlfeat/vlfeat) is a required library.
+For this project the [VLFeat](https://github.com/vlfeat/vlfeat) library is required. To add it as a Matlab toolbox follow these [instructions](https://github.com/vlfeat/vlfeat#quick-start-with-matlab).
 
 ---
 
