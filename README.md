@@ -68,15 +68,15 @@ Let $\mathbf{X}=[X,Y,Z]^T$ be the coordinates of a 3D world point and $\mathbf{x
 
 The projection is obtained by tracing a ray from the 3D point through the optical center O to the image plane. With focal distance $f$, the projected coordinates are:
 
-$$y=f\frac{X}{Z} \quad,\quad x=f\frac{Y}{Z} \tag{1}$$
+$$y=f\frac{X}{Z} \quad,\quad x=f\frac{Y}{Z}$$
 
 With unitary focal distance ($f=1$) and homogeneous coordinates:
 
-$$\lambda \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix} \tag{2}$$
+$$\lambda \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}$$
 
 The optical axis doesn't always intersect the image plane at the origin — there's an offset describable by a rotation $R$ and translation $T$. A unit conversion from meters to pixels is also needed. These together form the intrinsic parameter matrix $K$:
 
-$$\lambda \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} \begin{bmatrix} \mathbf{R} & \mathbf{T} \\ \mathbf{0}^T & 1 \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix} \tag{3}$$
+$$\lambda \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} \begin{bmatrix} \mathbf{R} & \mathbf{T} \\ \mathbf{0}^T & 1 \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}$$
 
 Since we're now in image coordinates in pixels, these are denoted $u$ and $v$ to distinguish them from the metric $x$ and $y$.
 
@@ -123,9 +123,9 @@ $$q_{0}=q-\sum_{i=1}^{N} \frac{\mathbf{q_i}}{N}\quad,\quad p_{0}=p-\sum_{i=1}^{N
 
 The rotation and translation that minimise the equation above are obtained via SVD:
 
-$$M=p_{0}\,q_{0}^T=U\Sigma V^T \tag{4}$$
+$$M=p_{0}\,q_{0}^T=U\Sigma V^T$$
 
-$$\widehat{R}=VU^T \tag{5}$$
+$$\widehat{R}=VU^T$$
 
 $$\widehat{\mathbf{T}}=\sum_{i=1}^{N} \frac{\mathbf{p_i}}{N}-\widehat{R}\sum_{i=1}^{N} \frac{\mathbf{q_i}}{N}$$
 
@@ -147,11 +147,11 @@ The main loop iterates over all consecutive image pairs. Let $RGB_i$ be the i-th
 
 **Point cloud generation.** Image coordinates $u$ and $v$ are simply pixel indices (with $(0,0)$ at the top-left corner) and $Z$ is the depth at those coordinates. Using Equation 3 with $R = I$ and $T=[0,0,0]^T$ (still in the depth camera frame), $X$ and $Y$ are recovered by inverting Equation 3:
 
-$$\begin{bmatrix} X \\ Y \\ Z \end{bmatrix}_m^d = K^{-1} \begin{bmatrix} u \times Z \\ v \times Z \\ Z \end{bmatrix}_{px}^d \tag{6}$$
+$$\begin{bmatrix} X \\ Y \\ Z \end{bmatrix}_m^d = K^{-1} \begin{bmatrix} u \times Z \\ v \times Z \\ Z \end{bmatrix}_{px}^d$$
 
 The points then need to be transformed from the depth camera frame to the RGB camera frame, using a known rotation and translation between them:
 
-$$\begin{bmatrix} X \\ Y \\ Z \end{bmatrix}^{RGB} = R_{d \to RGB} \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}^d + \mathbf{T}_{d \to RGB} \tag{7}$$
+$$\begin{bmatrix} X \\ Y \\ Z \end{bmatrix}^{RGB} = R_{d \to RGB} \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}^d + \mathbf{T}_{d \to RGB}$$
 
 This is applied to all points in the image pair. Figure 4 shows an example.
 
@@ -163,25 +163,25 @@ This is applied to all points in the image pair. Figure 4 shows an example.
 
 **RANSAC.** The two sets of matching 3D points are passed to RANSAC using a general 3D affine model:
 
-$$\begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}_i = \begin{bmatrix} a_{11} & a_{12} & a_{13} & a_{14} \\ a_{21} & a_{22} & a_{23} & a_{24} \\ a_{31} & a_{32} & a_{33} & a_{34} \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}_{i-1} \tag{8}$$
+$$\begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}_i = \begin{bmatrix} a_{11} & a_{12} & a_{13} & a_{14} \\ a_{21} & a_{22} & a_{23} & a_{24} \\ a_{31} & a_{32} & a_{33} & a_{34} \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}_{i-1}$$
 
 This can be rewritten in closed form. For each set of 3D point correspondences:
 
-$$\begin{bmatrix} X & Y & Z & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & X & Y & Z & 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & X & Y & Z & 1 \end{bmatrix}_{i-1} \begin{bmatrix} a_{11} \\ \vdots \\ a_{34} \end{bmatrix} = \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}_i \tag{9}$$
+$$\begin{bmatrix} X & Y & Z & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & X & Y & Z & 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & X & Y & Z & 1 \end{bmatrix}_{i-1} \begin{bmatrix} a_{11} \\ \vdots \\ a_{34} \end{bmatrix} = \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}_i$$
 
 Which gives a system of the form:
 
-$$A\mathbf{h}=\mathbf{X} \tag{10}$$
+$$A\mathbf{h}=\mathbf{X}$$
 
 With exactly $n=4$ points this is a determined system solved directly; with more points it's over-determined and solved via the Moore-Penrose pseudo-inverse:
 
-$$\mathbf{h}=(A^{T}A)^{-1}A^T\mathbf{X} \tag{12}$$
+$$\mathbf{h}=(A^{T}A)^{-1}A^T\mathbf{X}$$
 
 When sampled points are coplanar, $A$ becomes ill-conditioned. Whenever the condition number exceeds a threshold, that iteration is skipped and resampled. The affine model is chosen over the rigid one because it has a closed-form solution and its inliers are a superset of the rigid model's inliers. Given the large number of SIFT features detected, the number of RANSAC iterations is set to $k=2876$ with a 1 cm inlier distance threshold.
 
 **Rigid transformation estimation.** From the RANSAC inliers, $R$ and $T$ are estimated using the SVD method from Section 1.5. One edge case to handle: SVD can produce $\det(R) = -1$ (a reflection rather than a rotation). This is corrected as follows:
 
-$$\widehat{R} = V \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & |VU^T| \end{bmatrix} U^T \tag{13}$$
+$$\widehat{R} = V \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & |VU^T| \end{bmatrix} U^T$$
 
 The middle matrix is the identity unless $VU^T$ is a reflection, in which case its last diagonal element is $-1$, correcting it to a proper rotation.
 
@@ -189,6 +189,6 @@ The middle matrix is the identity unless $VU^T$ is a reflection, in which case i
 
 **Merging.** The final $R$ and $T$ from ICP are composed with the accumulated transformation from all previous steps to express the $i$-th cloud in the reference frame of the first cloud. For three clouds this looks like:
 
-$$\mathbf{X_3}=R_{13}\mathbf{X_{1}}+\mathbf{T_{13}}\quad,\quad R_{13}=R_{23}R_{12}\quad,\quad \mathbf{T_{13}}=R_{23}\mathbf{T_{12}}+\mathbf{T_{23}} \tag{14}$$
+$$\mathbf{X_3}=R_{13}\mathbf{X_{1}}+\mathbf{T_{13}}\quad,\quad R_{13}=R_{23}R_{12}\quad,\quad \mathbf{T_{13}}=R_{23}\mathbf{T_{12}}+\mathbf{T_{23}}$$
 
 This composition extends to any number of clouds, progressively merging everything into the first cloud's coordinate frame.
